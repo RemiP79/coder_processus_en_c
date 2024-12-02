@@ -83,13 +83,39 @@ int main(int argc, char *argv[]) {
     sprintf(shmid_str, "%d", shmid);
     sprintf(semid_str, "%d", semid);
 
-    // Création du processus afficheur
+
+/* Création du processus afficheur
+int status_afficheur;
+pid_t afficheur_pid = fork();
+
+if (afficheur_pid == 0) {
+    // Processus enfant
+    execl("./afficheur", "./afficheur", NULL);
+    perror("Erreur execl"); // execl échoue uniquement si une erreur se produit
+    exit(1);
+} else if (afficheur_pid > 0) {
+    // Processus père
+    waitpid(afficheur_pid, &status_afficheur, 0); // Attendre que l'enfant se termine
+    exit(0); // Terminer le père après la fin du fils
+} else {
+    // Gestion d'erreur pour le fork
+    perror("Erreur lors du fork");
+    exit(1);
+}
+*/
+ // Création du processus afficheur
+    int status_afficheur;
     afficheur_pid = fork();
     if (afficheur_pid == 0) {
+        printf("Afficheur");
         execl("./afficheur", "./afficheur", NULL);
         perror("Erreur execl");
         exit(1);
-    }
+    } 
+
+
+
+  
 
     pid_t pid;
     pid_t pere_pid;
@@ -121,12 +147,27 @@ int main(int argc, char *argv[]) {
         wait(NULL);
     }
 
-    // Terminer l'afficheur
-    printf("Plus de place disponible pour %s.\n", titre_film_cinema );
+
+
+
+
+ if (afficheur_pid > 0) {
+    // Processus père
+    printf("Mort du pere");
+    waitpid(pid, &status_afficheur, 0); // Attendre que l'enfant se termine
+   // waitpid(afficheur_pid, &status_afficheur, 0);
+   // exit(0); // Terminer le père après la fin du fils
     terminer_afficheur();
+}
+
+
+
+    /* Terminer l'afficheur
+    printf("Plus de place disponible pour %s.\n", titre_film_cinema );
+    terminer_afficheur();*/
 
     // Attendre la fin de l'afficheur
-    waitpid(afficheur_pid, NULL, 0);
+    //waitpid(afficheur_pid, NULL, 0);
 
     // Détacher et supprimer la mémoire partagée
     shmdt(mem);

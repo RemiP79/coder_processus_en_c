@@ -5,6 +5,7 @@
 #include <sys/shm.h>
 #include <signal.h>
 #include "shm_const.h"
+#include <stdio.h>
 
 extern int * attacher_segment_memoire(int * mem, int *shmid);
 
