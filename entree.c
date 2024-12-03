@@ -29,7 +29,7 @@ bool entree_personne(int *mem, int semid, int nb_billet) {
     /* Reste-t-il des places libres ? */
     if (*mem == 0) {
       /* No more */     
-      printf("Caisse fermé. \n");
+      printf("Caisse fermé : caisse fermée. \n");
       V(semid);
       bool client_suivant=false;
       exit(0);  //fermer la caisse
@@ -37,6 +37,8 @@ bool entree_personne(int *mem, int semid, int nb_billet) {
     else if (nb_billet <= *mem){       
         *mem=(*mem - nb_billet);        
         client_suivant = true;
+    }else if (nb_billet > *mem){
+       // printf("Client veut trop de places\n");
     }
 
     /* On protège l'accès à la shm */
@@ -69,7 +71,7 @@ int main(int argc, char *argv[]) {
         attente_aleatoire(delais); //mettre un delais compris entre 1 et 3 ok
         nb_billet = billets_aleatoire(7);
         i++;  
-        printf("CAISSE N° : %d ; Une personne %d se présente pour %d billets \n", getpid(), i, nb_billet);
+        //printf("CAISSE N° : %d ; Une personne %d se présente pour %d billets \n", getpid(), i, nb_billet);
         while (entree_personne(mem, semid, nb_billet) == false) {
             sleep(1); 
         }

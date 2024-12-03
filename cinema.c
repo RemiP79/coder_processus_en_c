@@ -84,25 +84,6 @@ int main(int argc, char *argv[]) {
     sprintf(semid_str, "%d", semid);
 
 
-/* Création du processus afficheur
-int status_afficheur;
-pid_t afficheur_pid = fork();
-
-if (afficheur_pid == 0) {
-    // Processus enfant
-    execl("./afficheur", "./afficheur", NULL);
-    perror("Erreur execl"); // execl échoue uniquement si une erreur se produit
-    exit(1);
-} else if (afficheur_pid > 0) {
-    // Processus père
-    waitpid(afficheur_pid, &status_afficheur, 0); // Attendre que l'enfant se termine
-    exit(0); // Terminer le père après la fin du fils
-} else {
-    // Gestion d'erreur pour le fork
-    perror("Erreur lors du fork");
-    exit(1);
-}
-*/
  // Création du processus afficheur
     int status_afficheur;
     afficheur_pid = fork();
@@ -112,11 +93,7 @@ if (afficheur_pid == 0) {
         perror("Erreur execl");
         exit(1);
     } 
-
-
-
   
-
     pid_t pid;
     pid_t pere_pid;
     int status_fils;
@@ -147,33 +124,18 @@ if (afficheur_pid == 0) {
         wait(NULL);
     }
 
+     if (afficheur_pid > 0) {
+        // Processus père
+        printf("Plus de place pour %s .\n",titre_film_cinema);
+        waitpid(pid, &status_afficheur, 0); // Attendre que l'enfant se termine
+        terminer_afficheur();
+    }
 
+        // Détacher et supprimer la mémoire partagée
+        shmdt(mem);
+        shmctl(shmid, IPC_RMID, NULL);
 
-
-
- if (afficheur_pid > 0) {
-    // Processus père
-    printf("Mort du pere");
-    waitpid(pid, &status_afficheur, 0); // Attendre que l'enfant se termine
-   // waitpid(afficheur_pid, &status_afficheur, 0);
-   // exit(0); // Terminer le père après la fin du fils
-    terminer_afficheur();
-}
-
-
-
-    /* Terminer l'afficheur
-    printf("Plus de place disponible pour %s.\n", titre_film_cinema );
-    terminer_afficheur();*/
-
-    // Attendre la fin de l'afficheur
-    //waitpid(afficheur_pid, NULL, 0);
-
-    // Détacher et supprimer la mémoire partagée
-    shmdt(mem);
-    shmctl(shmid, IPC_RMID, NULL);
-
-    //printf("Tous les processus sont terminés.\n");
-    return 0;
-}
+        //printf("Tous les processus sont terminés.\n");
+        return 0;
+    }
 
